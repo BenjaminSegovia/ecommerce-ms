@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: producto-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/producto_db
+    username: root
+    password: root123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
