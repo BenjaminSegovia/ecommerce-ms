@@ -2,6 +2,7 @@ package cl.ecommerce.producto_service.service;
 
 import cl.ecommerce.producto_service.dto.ProductoRequestDTO;
 import cl.ecommerce.producto_service.dto.ProductoResponseDTO;
+import cl.ecommerce.producto_service.exception.RecursoNoEncontradoException;
 import cl.ecommerce.producto_service.model.Categoria;
 import cl.ecommerce.producto_service.model.Producto;
 import cl.ecommerce.producto_service.repository.CategoriaRepository;
@@ -27,7 +28,7 @@ public class ProductoService {
 
     public ProductoResponseDTO buscarPorId(Long id) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado con id: " + id));
         return toResponseDTO(producto);
     }
 
@@ -40,7 +41,7 @@ public class ProductoService {
 
     public ProductoResponseDTO crear(ProductoRequestDTO dto) {
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + dto.getCategoriaId()));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Categoria no encontrada con id: " + dto.getCategoriaId()));
 
         Producto producto = new Producto();
         producto.setVendedorId(dto.getVendedorId());
@@ -56,10 +57,10 @@ public class ProductoService {
 
     public ProductoResponseDTO actualizar(Long id, ProductoRequestDTO dto) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado con id: " + id));
 
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + dto.getCategoriaId()));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Categoria no encontrada con id: " + dto.getCategoriaId()));
 
         producto.setVendedorId(dto.getVendedorId());
         producto.setCategoria(categoria);
@@ -73,7 +74,7 @@ public class ProductoService {
 
     public void eliminar(Long id) {
         if (!productoRepository.existsById(id)) {
-            throw new RuntimeException("Producto no encontrado con id: " + id);
+            throw new RecursoNoEncontradoException("Producto no encontrado con id: " + id);
         }
         productoRepository.deleteById(id);
     }
