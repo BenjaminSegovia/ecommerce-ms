@@ -1,10 +1,13 @@
 package cl.ecommerce.producto_service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiErrorDTO {
 
     private LocalDateTime timestamp;
@@ -12,5 +15,5 @@ public class ApiErrorDTO {
     private String error;
     private String mensaje;
     private String path;
-    private Map<String, String> campos; // Nullable: utilizado principalmente para errores de validación (@Valid)
+    private Map<String, String> campos;
 }
