@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -32,6 +34,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(construirError(HttpStatus.NOT_FOUND, e.getMessage(), request.getRequestURI()));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiErrorDTO> handleNoResourceFound(
+            NoResourceFoundException e,
+            HttpServletRequest request) {
+
+        String mensaje = String.format("La ruta '%s' no existe", request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(construirError(HttpStatus.NOT_FOUND, mensaje, request.getRequestURI()));
     }
 
     @ExceptionHandler(ReglaNegocioException.class)
@@ -97,7 +110,13 @@ public class GlobalExceptionHandler {
 
         String mensaje = String.format("El método HTTP '%s' no está soportado para esta ruta", e.getMethod());
 
+        HttpHeaders headers = new HttpHeaders();
+        if (e.getSupportedHttpMethods() != null) {
+            headers.setAllow(e.getSupportedHttpMethods());
+        }
+
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .headers(headers)
                 .body(construirError(HttpStatus.METHOD_NOT_ALLOWED, mensaje, request.getRequestURI()));
     }
 
